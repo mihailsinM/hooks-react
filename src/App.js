@@ -1,59 +1,8 @@
-import { Component, useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import './App.css';
 
-// class Slider extends Component {
 
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             autoplay: false,
-//             slide: 0
-//         }
-//     }
-
-//     componentDidMount(){
-//         document.title = `Slide: ${this.state.slide}`;
-//     }
-
-//     componentDidUpdate(){
-//         document.title = `Slide: ${this.state.slide}`;
-//     }
-
-//     changeSlide = (i) => {
-//         this.setState(({slide}) => ({
-//             slide: slide + i
-//         }))
-//     }
-
-//     toggleAutoplay = () => {
-//         this.setState(({autoplay}) => ({
-//             autoplay: !autoplay
-//         }))
-//     }
-
-//     render() {
-//         return (
-//             <Container>
-//                 <div className="slider w-50 m-auto">
-//                     <img className="d-block w-100" src="https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg" alt="slide" />
-//                     <div className="text-center mt-5">Active slide {this.state.slide} <br/> {this.state.autoplay ? 'auto' : null}</div>
-//                     <div className="buttons mt-3">
-//                         <button 
-//                             className="btn btn-primary me-2"
-//                             onClick={() => this.changeSlide(-1)}>-1</button>
-//                         <button 
-//                             className="btn btn-primary me-2"
-//                             onClick={() => this.changeSlide(1)}>+1</button>
-//                         <button 
-//                             className="btn btn-primary me-2"
-//                             onClick={this.toggleAutoplay}>toggle autoplay</button>
-//                     </div>
-//                 </div>
-//             </Container>
-//         )
-//     }
-// }
 
 
 const Slider = (props) => {
@@ -61,26 +10,15 @@ const Slider = (props) => {
     const [slide, setSlide] = useState(0);
     const [autoplay, setAutoplay] = useState(false);
 
-
-    function logging() {
-        console.log('log');
-    }
-    // useEffect(() => {
-    //     console.log('effect ');
-    //     document.title = `Slide: ${slide}`;
-    // }, []);
-
-    useEffect(() => {
-        console.log('effect update');
-        document.title = `Slide: ${slide}`;
-
-        window.addEventListener('click', logging);
-
-        return () => {
-            window.removeEventListener('click', logging);
-        }
-
-    }, [slide]);
+    const getSomeImages = useCallback(() => {
+        console.log('fetching');
+        return [
+            "https://images.unsplash.com/photo-1685114139619-540ec96ff5fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxNXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+            "https://images.unsplash.com/photo-1685239181894-5db1cafd7021?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxOXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+            "https://images.unsplash.com/photo-1555001356-333dbc0f8b48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzNHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+            "https://plus.unsplash.com/premium_photo-1685030411267-c9bffe9b8c50?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3N3x8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=60"
+        ]
+    }, []);
 
     function changeSlide(i) {
         setSlide(slide => slide + i);
@@ -93,7 +31,9 @@ const Slider = (props) => {
     return (
         <Container>
             <div className="slider w-50 m-auto">
-                <img className="d-block w-100" src="https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg" alt="slide" />
+
+                <Slide getSomeImages={getSomeImages} />
+
                 <div className="text-center mt-5">Active slide {slide} <br />
                     {autoplay ? 'Auto play.' : null}
                 </div>
@@ -115,16 +55,23 @@ const Slider = (props) => {
     )
 }
 
+const Slide = ({ getSomeImages }) => {
+    const [images, setImages] = useState([]);
 
-function App() {
-
-    const [slider, setSlider] = useState(true);
-
+    useEffect(() => {
+        setImages(getSomeImages())
+    }, [getSomeImages]);
     return (
         <>
-            <button onClick={() => setSlider(false)}>Click</button>
-            {slider ? <Slider /> : null}
+            {images.map((url, i) => <img key={i} className="d-block w-100" src={url} alt="slide" />)}
         </>
+    )
+}
+
+
+function App() {
+    return (
+        <Slider />
     );
 }
 
